@@ -1,53 +1,53 @@
 import React, { Component } from 'react';
 
-import './person-details.css';
+import './item-details.css';
 import SwapiService from '../../services/swapi-service';
 import Spinner from '../spinner';
 import ErrorButton from '../error-button/error-button';
 
-export default class PersonDetails extends Component {
+export default class ItemDetails extends Component {
 
   swapi = new SwapiService();
 
   state = {
-    person: null,
-    loading: false
+    item: null,
+    loading: false,
+    image: null
   };
 
   componentDidMount() {
-    this.updatePerson();
+    this.updateItem();
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.personId !== prevProps.personId) {
-      this.updatePerson();
+    if (this.props.itemId !== prevProps.itemId) {
+      this.updateItem();
     }
   }
 
-  updatePerson() {
+  updateItem() {
     this.setState({ loading: true });
 
-    const { personId } = this.props;
+    const { itemId, getData, getImageUrl } = this.props;
 
-    if (!personId) {
+    if (!itemId) {
       return;
     }
 
-    this.swapi
-      .getPerson(personId)
-      .then(person => {
+    getData(itemId).then(item => {
         this.setState({
-          person,
-          loading: false
+          item,
+          loading: false,
+          image: getImageUrl(item)
         });
       });
   }
 
   render() {
-    const { loading, person } = this.state;
-    const spinner = loading && person ? <Spinner></Spinner> : null,
-          content = !loading && person ? <PersonDetailsCard person={person}></PersonDetailsCard> : null,
-          error = !person ? <span>Select person from list</span> : null;
+    const { loading, item } = this.state;
+    const spinner = loading && item ? <Spinner></Spinner> : null,
+          content = !loading && item ? <PersonDetailsCard person={item} state={this.state}></PersonDetailsCard> : null,
+          error = !item ? <span>Select person from list</span> : null;
     
 
     return (
@@ -60,13 +60,14 @@ export default class PersonDetails extends Component {
   }
 }
 
-const PersonDetailsCard = ({ person }) => {
+const PersonDetailsCard = ({ person, state }) => {
   const { id, name, gender, birthYear, eyeColor} = person;
+  const { image } = state;
 
   return (
     <React.Fragment>
       <img className="person-image"
-          src={`https://starwars-visualguide.com/assets/img/characters/${id}.jpg`} />
+          src={image} />
         <div className="card-body">
           <h4>{name}</h4>
           <ul className="list-group list-group-flush">

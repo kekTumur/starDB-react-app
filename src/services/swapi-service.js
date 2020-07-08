@@ -3,7 +3,7 @@ export default class SwapiService {
 
     _apiBase = 'https://swapi.dev/api';
   
-    async getResource(url){
+     getResource = async (url) => {
       const res = await fetch(`${this._apiBase}${url}`);
       if (!res.ok) {
         throw new Error('could not fetch' + url);
@@ -12,40 +12,52 @@ export default class SwapiService {
       return body;
     }
   
-    async getAllPeople() {
+     getAllPeople = async () => {
       const res = await this.getResource('/people/');
       return res.results.map(this._transformPlanet);
     }
   
-    async getAllPlanets() {
+     getAllPlanets = async () => {
       const res = await this.getResource('/planets/');
       return res.results.map(this._transformPlanet);
     }
   
-    async getAllStarships() {
+     getAllStarships = async () => {
       const res = await this.getResource('/starships/');
       return res.results.map(this._transformStarship);
     }
   
-    async getPerson(id) {
+     getPerson = async (id) => {
       const person = await this.getResource(`/people/${id}`);
       return this._transformPerson(person);
     }
   
-    async getPlanet(id) {
+     getPlanet = async (id) => {
       const planet = await this.getResource(`/planets/${id}`);
       return this._transformPlanet(planet);
     }
   
-    async getStarship(id) {
+    getStarship = async (id) => {
       const starship = await this.getResource(`/starships/${id}`);
       return this._transformStarship(starship);
     }
 
-    _extractId(item) {
+    _extractId = (item) => {
       const idRexExp = /\/([0-9]*)\/$/;
       return item.url.match(idRexExp)[1];
     }
+
+    getPersonImage = ({id}) => {
+      return `https://starwars-visualguide.com/assets/img/characters/${id}.jpg`
+    };
+
+    getPlanetImage = ({id}) => {
+      return `https://starwars-visualguide.com/assets/img/planets/${id}.jpg`
+    };
+
+    getStarshipImage = ({id}) => {
+      return `https://starwars-visualguide.com/assets/img/starships/${id}.jpg`
+    };
 
     _transformPlanet = (planet) => {
       return {
@@ -63,11 +75,11 @@ export default class SwapiService {
         name: starship.name,
         model: starship.model,
         manufacturer: starship.manufacturer,
-        constInCredits: starship.constInCredits,
+        constInCredits: starship.const_inCredits,
         length: starship.length,
         crew: starship.crew,
         passengers: starship.passengers,
-        cargoCapacity: starship.cargoCapacity
+        cargoCapacity: starship.cargo_capacity
       }
     }
 

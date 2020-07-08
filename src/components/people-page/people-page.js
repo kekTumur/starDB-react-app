@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
 import ItemList from '../item-list';
-import PersonDetails from '../person-details';
+import PersonDetails from '../item-details';
 import './people-page.css';
+import ErrorBoundry from '../error-boundry/error-boundry';
+import ErrorAlert from '../error-alert/error-alert';
+import Row from '../row/row';
+
 
 export default class PeoplePage extends Component {
 
     state = {
-        selectedPerson: 3,
-        hasError: false
+        selectedPerson: 3
     };
-
-    componentDidCatch() {
-        this.setState({
-            hasError: true
-        });
-    }
 
     onPersonSelected = id => {
         this.setState({
@@ -23,27 +20,28 @@ export default class PeoplePage extends Component {
     };
 
     render() {
+
+        const itemlist = (
+            <ItemList
+            renderItems={item => item.name}
+            getData={this.props.getData} 
+            onPersonSelected={this.onPersonSelected}
+            ></ItemList>
+        );
+
+        const personDetails = (
+            <PersonDetails personId={this.state.selectedPerson}></PersonDetails>
+        );
+          
         if (this.state.hasError) {
-            return <ErrorPeople/>
+            return <ErrorAlert/>
         }
         return (
-            <div className="row mb2">
-                <div className="col-md-6">
-                    <ItemList onPersonSelected={this.onPersonSelected}></ItemList>
-                </div>
-                <div className="col-md-6">
-                    <PersonDetails personId={this.state.selectedPerson}></PersonDetails>
-                </div>
-            </div>
+            <ErrorBoundry>
+                <Row left={ itemlist } right={ personDetails }/>
+            </ErrorBoundry>
         );
     }
 }
 
-const ErrorPeople = () => {
-    return (
-        <React.Fragment>
-            <h1>BOOM!</h1>
-            <span className="err">error</span>
-        </React.Fragment>
-    )
-};
+
